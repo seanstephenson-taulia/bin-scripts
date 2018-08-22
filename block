@@ -1,0 +1,1 @@
+sudo sed -i 's/#127/127/' /etc/hosts

@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+name=$1
+if [ -z "$name" ]; then
+  name="dump"
+fi
+
+location=~/other/mysql-dumps/$name.sql
+
+mysqldump -u root --all-databases > $location
+

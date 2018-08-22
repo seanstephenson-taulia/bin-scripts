@@ -1,0 +1,1 @@
+http --verify=no --cert=server/src/test/resources/certs/client/support/appserver.crt --cert-key=server/src/test/resources/certs/client/support/appserver.key --default-scheme=https "$@"

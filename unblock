@@ -1,0 +1,8 @@
+if [[ $# -eq 0 ]] ; then
+    # modify everything but localhost
+    PATTERN=/localhost/!
+else
+    PATTERN=/$1/
+fi
+
+sudo sed -i "$PATTERN s/^127/#127/" /etc/hosts

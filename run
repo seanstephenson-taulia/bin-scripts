@@ -1,0 +1,52 @@
+#/bin/bash
+set -e
+
+source ~/.setjdk
+setjdk 1.8
+
+NAME="${PWD##*/}"
+
+if [[ "$NAME" == intapi* ]]; then
+  echo "Running intapi app"
+  gradle run
+
+elif [[ "$NAME" == app-trusted* ]]; then
+  echo "Running trusted component with mocks"
+  gradle runWithMocks
+
+elif [[ "$NAME" == proapp-trusted* ]]; then
+  echo "Running proapp trusted component"
+  gradle run
+
+elif [[ "$NAME" == app* ]]; then
+  if [ "$1" == "prod" ]; then
+    echo "Running UI app in prod mode"
+    gradle distZip createDevRunScripts
+    DIST=$(cd server/build/distributions && ls -t $NAME-server-*.zip | head -1 | rev | cut -f 2- -d '.' | rev)
+    mkdir -p build/dist
+    unzip -o server/build/distributions/$DIST.zip -d build/dist
+    server/build/distributions/runWithDevEnvironment build/dist/$DIST/bin/server
+  elif [ "$1" == "debug" ]; then
+    echo "Running UI app in debug mode"
+    gradle runInMemory runDevServer --parallel -Papplication.devMode=true -Pjvm.debugEnabled=true
+  else
+    echo "Running UI app in dev mode"
+    gradle run
+  fi
+
+elif [ "$NAME" == "monolith" ]; then
+  echo "Running monolith"
+  setjdk 1.7
+
+  source "/Users/sean.stephenson/.sdkman/bin/sdkman-init.sh"
+  sdk use grails 1.3.6 #/dev/null 2>&1
+
+  export JAVA_OPTS="-XX:MaxPermSize=1024m -Xms1024M -Xmx4096M -server -Dorg.terracotta.quartz.skipUpdateCheck=true -Djava.net.preferIPv4Stack=true -Dstringchararrayaccessor.disabled=true"
+  #export GRAILS_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+
+  gradle run
+
+else
+  echo "Unknown type for app: $NAME"
+fi
+

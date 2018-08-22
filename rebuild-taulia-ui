@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+echo
+echo "Rebuilding 'lib-app-ui'"
+(cd ~/dev/lib-app-ui && gradle npm_publish) | groovy "$(dirname $0)/rebuild-taulia-ui-update-package-json"
+echo

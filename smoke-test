@@ -1,0 +1,4 @@
+TEST=$1
+shift
+
+gradle test -Dwebdriver.chrome.driver=/Users/sean.stephenson/other/chromedriver/chromedriver -Dgeb.driver=chrome --tests "*$TEST" $@
